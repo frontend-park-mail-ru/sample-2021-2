@@ -1,4 +1,8 @@
-.header {
-  color: #cc0000;
-  font-family: sans-serif;
+a, input {
+  display: block;
+}
+
+img {
+  display: block;
+  width: 300px;
 }
