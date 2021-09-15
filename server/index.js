@@ -46,6 +46,12 @@ const users = {
         age: 21,
         score: 72,
     },
+    'i.drujinin@corp.mail.ru': {
+        email: 'i.drujinin@corp.mail.ru',
+        password: 'password',
+        age: 27,
+        score: 14,
+    },
 };
 const ids = {};
 
