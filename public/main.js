@@ -135,32 +135,42 @@ function loginPage() {
 
 function profilePage() {
     root.innerHTML = '';
-    Ajax.ajaxGet({
-        url: '/me',
-        callback: (status, responseText) => {
-            let isAuthorized = false;
-
-            if (status === AJAX_STATUSES.OK) {
-                isAuthorized = true;
-            }
-
-            if (isAuthorized) {
-                try {
-                    const data = JSON.parse(responseText);
-                    const profile = new ProfileComponent(root);
-                    profile.data = data;
-                    profile.render(RENDER_METHODS.DOM);
-                } catch (e) {
-                    alert('ОШИБКА СЕРВЕРА');
-                    loginPage();
-                };
-                return;
-            }
-
-            alert('АХТУНГ НЕТ АВТОРИЗАЦИИ');
+    Ajax.getUsingFetch({url: '/me'})
+        .then(({status, parsedBody}) => {
+                const profile = new ProfileComponent(root);
+                profile.data = parsedBody;
+                profile.render(RENDER_METHODS.DOM);
+        })
+        .catch((status, parsedBody) => {
+            alert(`АХТУНГ НЕТ АВТОРИЗАЦИИ ${status} & ${responseText}`);
             loginPage();
-        }
-    });
+        })
+    // Ajax.ajaxGet({
+    //     url: '/me',
+    //     callback: (status, responseText) => {
+    //         let isAuthorized = false;
+
+    //         if (status === AJAX_STATUSES.OK) {
+    //             isAuthorized = true;
+    //         }
+
+    //         if (isAuthorized) {
+    //             try {
+    //                 const data = JSON.parse(responseText);
+    //                 const profile = new ProfileComponent(root);
+    //                 profile.data = data;
+    //                 profile.render(RENDER_METHODS.DOM);
+    //             } catch (e) {
+    //                 alert('ОШИБКА СЕРВЕРА');
+    //                 loginPage();
+    //             };
+    //             return;
+    //         }
+
+    //         alert('АХТУНГ НЕТ АВТОРИЗАЦИИ');
+    //         loginPage();
+    //     }
+    // });
 }
 
 menuPage();
