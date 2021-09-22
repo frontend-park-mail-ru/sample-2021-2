@@ -1,3 +1,5 @@
+import ProfileComponent from './components/Profile/Profile.js';
+import {RENDER_METHODS, AJAX_STATUSES} from './constants.js'
 console.log('lol kek');
 
 const root = document.getElementById('root');
@@ -29,26 +31,6 @@ const configApp = {
     },
 }
 
-function ajax(method, url, body = null, callback) {
-    const xhr = new XMLHttpRequest();
-    xhr.open(method, url, true);
-    xhr.withCredentials = true;
-
-    xhr.addEventListener('readystatechange', function() {
-        if (xhr.readyState !== XMLHttpRequest.DONE) return;
-
-        callback(xhr.status, xhr.responseText);
-    });
-
-    if (body) {
-        xhr.setRequestHeader('Content-type', 'application/json; charset=utf8');
-        xhr.send(JSON.stringify(body));
-        return;
-    }
-
-    xhr.send();
-}
-
 function createInput(type, text, name) {
     const input = document.createElement('input');
     input.type = type;
@@ -57,7 +39,6 @@ function createInput(type, text, name) {
 
     return input;
 }
-
 
 function menuPage() {
     root.innerHTML = '';
@@ -135,20 +116,18 @@ function loginPage() {
         const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
 
-        ajax(
-          'POST',
-          '/login',
-            {email, password},
-            (status) => {
-              if (status === 200) {
-                  profilePage();
-                  return;
-              }
+        Ajax.ajaxPost({
+            url: '/login',
+            body: {email, password},
+            callback: (status) => {
+                if (status === AJAX_STATUSES.OK) {
+                    profilePage();
+                    return;
+                }
 
-              alert('НЕ получилось не фартануло');
+                alert('НЕ получилось не фартануло');
             }
-        );
-
+        });
     })
 
     root.appendChild(form);
@@ -156,49 +135,32 @@ function loginPage() {
 
 function profilePage() {
     root.innerHTML = '';
-
-    ajax(
-        'GET',
-        '/me',
-        null,
-        (status, responseText) => {
+    Ajax.ajaxGet({
+        url: '/me',
+        callback: (status, responseText) => {
             let isAuthorized = false;
 
-            if (status === 200) {
+            if (status === AJAX_STATUSES.OK) {
                 isAuthorized = true;
             }
 
             if (isAuthorized) {
-                const {age, score, images} = JSON.parse(responseText);
-
-                const span = document.createElement('span');
-                span.textContent = `Мне ${age} и я крутой на ${score} очков`;
-
-                root.appendChild(span);
-
-                const back = document.createElement('a');
-                back.href = '/menu';
-                back.textContent = 'Назад';
-                back.dataset.section = 'menu';
-
-                root.appendChild(back);
-
-                if (images && Array.isArray(images)) {
-                    const div = document.createElement('div');
-                    root.appendChild(div);
-
-                    images.forEach((imageSrc) => {
-                        div.innerHTML += `<img src="${imageSrc}"/>`;
-                    })
-                }
-
+                try {
+                    const data = JSON.parse(responseText);
+                    const profile = new ProfileComponent(root);
+                    profile.data = data;
+                    profile.render(RENDER_METHODS.DOM);
+                } catch (e) {
+                    alert('ОШИБКА СЕРВЕРА');
+                    loginPage();
+                };
                 return;
             }
 
             alert('АХТУНГ НЕТ АВТОРИЗАЦИИ');
             loginPage();
         }
-    );
+    });
 }
 
 menuPage();
