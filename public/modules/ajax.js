@@ -1,5 +1,3 @@
-import { response } from "express";
-
 (function() {
     const noop = () => {};
     const AJAX_METHODS = {
@@ -78,14 +76,14 @@ import { response } from "express";
         }
 
         async asyncUsingFetch (args = {}) {
-            const respose = await fetch(args.url, {
+            const response = await fetch(args.url, {
                 method: AJAX_METHODS.GET
             });
 
             const parsedBody = await response.json();
 
             return {
-                status: resposen.status,
+                status: resposne.status,
                 parsedBody
             };
         }

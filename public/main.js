@@ -2,6 +2,18 @@ import ProfileComponent from './components/Profile/Profile.js';
 import {RENDER_METHODS, AJAX_STATUSES} from './constants.js'
 console.log('lol kek');
 
+(function() {
+	if ('serviceWorker' in navigator) {
+		navigator.serviceWorker.register('sw.js', {scope: '/'})
+			.then((registration) => {
+				console.log('sw registration on scope:', registration.scope);
+			})
+			.catch((err) => {
+				console.error(err);
+			});
+	}
+})();
+
 const root = document.getElementById('root');
 
 const configApp = {
